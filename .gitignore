@@ -1,3 +1,7 @@
+./paper/*
+!/paper/m5.tex
+!/paper/m5.pdf
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

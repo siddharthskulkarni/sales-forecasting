@@ -1,0 +1,144 @@
+% !TEX program = xelatex
+\documentclass{article}
+
+% -------------------- Packages --------------------
+\usepackage{amsthm, amssymb, bbm, amsmath, mathtools}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage[a4paper, width=5.8in]{geometry}
+\usepackage{fontspec}
+
+% -------------------- Fonts --------------------
+% \setmainfont{Verdana}
+\newcommand{\lmr}{\fontfamily{lmr}\selectfont} % Latin Modern Roman (math-friendly)
+
+% -------------------- Math Macros --------------------
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\I}[1]{\mathbbm{1}_{#1}}
+
+% -------------------- Hyperref --------------------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+}
+
+% -------------------- Title --------------------
+\title{Sales Forecasting at Scale: A Machine Learning Study on the Walmart M5 Dataset}
+\author{Siddharth Kulkarni}
+\date{}
+
+\allowdisplaybreaks
+
+\begin{document}
+\maketitle
+
+% -------------------- Abstract --------------------
+\begin{abstract}
+Accurate demand forecasting is central to inventory management and supply chain efficiency.
+This paper presents a machine learning–based sales forecasting pipeline built on the Walmart M5 dataset.
+We focus on feature engineering, model selection, and evaluation under realistic business constraints.
+Results demonstrate the trade-offs between accuracy, interpretability, and operational complexity.
+\end{abstract}
+
+% -------------------- 1. Introduction --------------------
+\section{Introduction}
+Demand forecasting at scale involves high-dimensional time series, strong seasonality, and sparse item-level data.
+The Walmart M5 competition provides a realistic benchmark with hierarchical structure across items, stores, and states \cite{makridakis2022m5}.
+This project aims to build an end-to-end forecasting system that balances predictive performance with practical usability.
+
+\textbf{Contributions:}
+\begin{itemize}[leftmargin=*]
+    \item A structured feature engineering pipeline for large-scale retail time series.
+    \item Comparative analysis of classical and ML-based forecasting models.
+    \item Business-oriented evaluation using competition-aligned metrics.
+\end{itemize}
+
+% -------------------- 2. Dataset --------------------
+\section{Dataset Description}
+The Walmart M5 dataset contains daily unit sales for over 30,000 products across multiple stores and states.
+Auxiliary data includes calendar features, pricing information, and event indicators.
+
+\subsection{Key Characteristics}
+\begin{itemize}[leftmargin=*]
+    \item Hierarchical structure: item $\rightarrow$ department $\rightarrow$ store $\rightarrow$ state.
+    \item Strong weekly and yearly seasonality.
+    \item Intermittent demand for many items.
+\end{itemize}
+
+% -------------------- 3. Problem Formulation --------------------
+\section{Problem Formulation}
+Let $y_{i,t}$ denote sales of item $i$ at time $t$.
+Given historical observations and covariates $x_{i,t}$, the objective is to learn a forecasting function
+\[
+\hat{y}_{i,t+h} = f(y_{i,1:t}, x_{i,1:t+h})
+\]
+for forecast horizon $h$, minimizing a scale-aware loss aligned with business priorities.
+
+% -------------------- 4. Feature Engineering --------------------
+\section{Feature Engineering}
+Features are constructed using only information available at prediction time.
+
+\subsection{Time-Based Features}
+\begin{itemize}[leftmargin=*]
+    \item Lagged sales (7, 14, 28 days)
+    \item Rolling means and standard deviations
+    \item Day-of-week and seasonal indicators
+\end{itemize}
+
+\subsection{External Covariates}
+\begin{itemize}[leftmargin=*]
+    \item Price changes and promotions
+    \item Holidays and special events
+\end{itemize}
+
+% -------------------- 5. Models --------------------
+\section{Models}
+We evaluate multiple forecasting approaches:
+
+\begin{itemize}[leftmargin=*]
+    \item Baseline statistical models (moving average, exponential smoothing)
+    \item Tree-based models (LightGBM)
+    \item Global vs item-level modeling strategies
+\end{itemize}
+
+Model selection prioritizes robustness and scalability over marginal accuracy gains.
+
+% -------------------- 6. Evaluation --------------------
+\section{Evaluation Methodology}
+Performance is evaluated using competition-style metrics (e.g., WRMSSE) and standard error measures.
+Validation is conducted via rolling-origin splits to respect temporal ordering.
+
+% -------------------- 7. Results --------------------
+\section{Results}
+Tree-based global models significantly outperform classical baselines, particularly for items with sparse demand.
+However, gains diminish for highly seasonal, high-volume products.
+
+\begin{figure}[h]
+    \centering
+    % \includegraphics[width=0.95\linewidth]{forecast_example.png}
+    \caption{Example forecast vs. actual sales}
+\end{figure}
+
+% -------------------- 8. Discussion --------------------
+\section{Discussion}
+While advanced models improve accuracy, they introduce interpretability and maintenance challenges.
+Feature leakage and computational cost are key risks in production settings.
+
+% -------------------- 9. Conclusion --------------------
+\section{Conclusion}
+This study demonstrates a practical ML pipeline for large-scale retail forecasting.
+Future work includes hierarchical reconciliation and probabilistic forecasting for inventory optimization.
+
+% -------------------- References --------------------
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
